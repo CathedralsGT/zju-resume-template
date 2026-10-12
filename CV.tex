@@ -1,155 +1,137 @@
+% 使用 XeLaTeX 编译；字体和图标均从项目目录加载。
 \documentclass[11pt]{article}
 
-
-\setlength{\parindent}{0pt}
-\usepackage{xltxtra}
+\usepackage{fontspec}
+\usepackage{xeCJK}
 \usepackage{hyperref}
-\hypersetup{hidelinks}
-\usepackage{url}
-\urlstyle{tt}
 \usepackage{xcolor}
-\definecolor{CVBlue}{RGB}{23,110,191}
 \usepackage{calc}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{calc}
-\usepackage{fontspec}
-\usepackage{xeCJK}
 \usepackage{enumitem}
-\CJKsetecglue{} %% 取消中文与数字之间的间隙
-
-
-%% 主文档字体设置
-\setmainfont[
-    Path = fonts/Main/,
-    Extension = .otf,
-    BoldFont = texgyretermes-bold.otf, % 加粗字体
-]{texgyretermes-regular.otf} % 正文字体
-
-% 中文字体设置
-\setCJKmainfont[
-    Path = fonts/hansans/,
-    Extension = .ttf,
-    BoldFont = NotoSansSC-Bold.ttf, % 加粗字体
-]{NotoSansSC-Regular.otf} % 正文字体
-
-
-\usepackage{relsize}
-\usepackage{xspace}
-
-% 使用 fontawesome（部分图标）
-\usepackage{fontawesome} 
-
-% A4纸，上下左右边距
+\usepackage{titlesec}
 \usepackage[
     a4paper,
     left=1.2cm,
     right=1.2cm,
-    top=1.5cm,
-    bottom=1cm,
+    top=1.3cm,
+    bottom=1.2cm,
     nohead
 ]{geometry}
 
-\renewcommand{\baselinestretch}{1.5} % 行间距设为1.5
+\setmainfont[
+    Path=fonts/Main/,
+    Extension=.otf,
+    BoldFont=texgyretermes-bold
+]{texgyretermes-regular}
+\setCJKmainfont[
+    Path=fonts/hansans/,
+    Extension=.ttf,
+    BoldFont=NotoSansSC-Bold
+]{NotoSansSC-Regular}
+\CJKsetecglue{\hskip 0.12em}
 
-\usepackage{titlesec}
-\usepackage{enumitem}
-\setlist{noitemsep} % 取消列表项间的额外间距
-%\setlist{nosep} % 取消所有垂直间距
-\setlist[itemize]{topsep=0.25em, leftmargin=*}
-\setlist[enumerate]{topsep=0.25em, leftmargin=*}
+% 兼容未安装 fontawesome 宏包的环境，复用项目附带的字体和图标定义。
+\IfFileExists{fontawesome.sty}{
+    \defaultfontfeatures[FontAwesome]{Path=fonts/fontawesome/opentype/}
+    \usepackage{fontawesome}
+}{
+    \newfontfamily\FA[Path=fonts/fontawesome/opentype/]{FontAwesome.otf}
+    \newcommand{\faicon}[1]{\csname faicon@##1\endcsname}
+    \input{fontawesomesymbols-xeluatex.tex}
+    \input{fontawesomesymbols-generic.tex}
+}
 
-% --- 用于控制【不同项目之间】的垂直距离 ---
+\definecolor{CVBlue}{RGB}{23,110,191}
+\hypersetup{
+    hidelinks,
+    pdftitle={蒋淇耀个人简历},
+    pdfauthor={蒋淇耀}
+}
+\setlength{\parindent}{0pt}
+\renewcommand{\baselinestretch}{1.18}
+\setlist[itemize]{
+    leftmargin=1.3em,
+    labelsep=0.5em,
+    topsep=0.25em,
+    itemsep=0.12em,
+    parsep=0pt,
+    partopsep=0pt
+}
+
 \newlength{\interProjectSpacing}
-\setlength{\interProjectSpacing}{0.9em} % <--- 在此调整项目之间的距离
-\newcommand{\projectsep}{\vspace{\interProjectSpacing}}
-
-% --- 用于控制【项目标题】与下方【项目描述】的距离 ---
-\newlength{\intraProjectTitleSep}
-\setlength{\intraProjectTitleSep}{0.4em} % <--- 在此调整标题和描述的距离
-\newcommand{\titlebreak}{\\[\intraProjectTitleSep]}
-
-% --- 用于控制【项目描述】与下方【要点列表】的距离 ---
-\newlength{\intraProjectListTopSep}
-\setlength{\intraProjectListTopSep}{0.2em} % <--- 在此调整描述和列表的距离
-
-% =======================================================================
-
-
-\titleformat{\section}         % 定制 \section 命令 
-{\large\bfseries\raggedright} % 将 section 标题设置为大号、粗体且左对齐
-{}{0em}                      % 可用于为所有 section 添加前缀（如“章节...”）
-{}                           % 可用于在标题前插入代码
-[{\color{CVBlue}\titlerule}]  % 在标题后插入一条横线
-\titlespacing*{\section}{0cm}{*1.6}{*1.2}
-
-
+\setlength{\interProjectSpacing}{0.45em}
+\newcommand{\projectsep}{\par\vspace{\interProjectSpacing}}
+\newcommand{\cvsection}[2]{%
+    \section{\texorpdfstring{\makebox[1.25em][c]{\color{CVBlue}\mdseries#1}\ #2}{#2}}%
+}
+\titleformat{\section}
+    {\large\bfseries\raggedright}{}{0em}{}
+    [{\color{CVBlue}\titlerule}]
+\titlespacing*{\section}{0pt}{0.7em}{0.35em}
 
 \begin{document}
 \pagenumbering{gobble}
 
-%%%% 利用tikz来定位照片
-\begin{tikzpicture}[remember picture, overlay] 
-    \node[anchor = north east] at ($(current page.north east)+(-2cm,-1.2cm)$) {\includegraphics[height=3cm]{avatar.jpg}};
-  \end{tikzpicture}%
-  %%%% 利用tikz来定位学校Logo，这里只在第一页显示
-  \begin{tikzpicture}[remember picture, overlay] 
-    \node[anchor = north west] at ($(current page.north west)+(0.5cm,+1.0cm)$) {\includegraphics[height=6cm]{zju.png}};
-  \end{tikzpicture}%
-\centerline{\LARGE\bfseries{胡豆}} 
+% 保留模板的浙大标识及右上角照片；照片文件为用户提供的证件照。
+\begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,inner sep=0pt]
+        at ($(current page.north west)+(0.5cm,1.0cm)$)
+        {\includegraphics[height=6cm]{zju.png}};
+    \node[anchor=north east,inner sep=0pt]
+        at ($(current page.north east)+(-1.2cm,-0.9cm)$)
+        {\includegraphics[height=3.4cm]{avatar.jpg}};
+\end{tikzpicture}
+\begin{center}
+    {\LARGE\bfseries 蒋淇耀}\\[0.3em]
+    {\normalsize\faEnvelopeO\ \href{mailto:3230105120@zju.edu.cn}{3230105120@zju.edu.cn}}\\[0.15em]
+    {\normalsize 浙江大学\quad 预计毕业时间：2027年6月}
+\end{center}
+\vspace{0.1em}
 
-\centerline{\normalsize{\faPhone\ 111-1111-1111 \quad \faEnvelopeO\ \href{mailto:3230100000@zju.edu.cn}{3230100000@zju.edu.cn}}} 
-
-\centerline{\normalsize{\faGithubSquare\ \href{https://github.com/maksymilan}{https://github.com/maksymilan} \quad \faRssSquare\ \href{https://maksymilan.github.io/}{https://maksymilan.github.io}}} 
-    
-\section{\makebox[\widthof{\faGraduationCap}][c]{\color{CVBlue}\faGraduationCap}\ 教育背景}    
-\textbf{浙江大学} \hfill 2023.9 -- 至今\\[0.5em] % 标题和正文间加一点距离
-CC98烂坑挖掘工程与技术\quad 大二 
-\begin{itemize}[nosep]
-    \item 相关课程：《烂坑挖掘及基础》、《高级挖坑技巧》、《烂坑数理统计》
-\end{itemize}
-
-\section{\makebox[\widthof{\faUsers}][c]{\color{CVBlue}\faUsers}\ 项目经历}
-
-% --- 第一个项目 ---
-% 将标题行末尾的 \\ 替换为 \titlebreak 命令
-\textbf{98烂坑风控与可视化作战平台} \hfill 2024.08 -- 至今 \titlebreak
-项目描述：为维护cc98社区的讨论纯度、净化“心灵之约”版块风气，本项目旨在对“烂坑”进行科学、严谨的量化分析，并引入\textbf{大语言模型(LLM)}对烂坑帖进行\textbf{自动化情感极性与“离谱指数”标注}。
-% 在 itemize 的选项中，使用 topsep=\intraProjectListTopSep 来控制上边距
-\begin{itemize}[nosep, topsep=\intraProjectListTopSep]
-    \item \textbf{数据与后端}：运用 \textbf{Go} 语言及 \textbf{GORM} 框架，实现对全站“烂坑”帖的7x24小时全天候\textbf{抓取}与\textbf{入库}(MySQL)。
-    \item \textbf{可视化前端}：采用原生 \textbf{HTML/CSS/JS} 构建了“烂坑”实时监控\textbf{作战大屏}。实现了坑主成分分析、挖坑热力图、年度烂坑王榜单等\textbf{可视化图表}，并通过 \textbf{AJAX} 异步刷新，确保数据洞察的实时性。
-    \item \textbf{核心产出}：全面掌握了从\textbf{数据采集、清洗、LLM标注到可视化分析}的“反烂坑”全链路技术。
-\end{itemize}
-
-% 使用 \projectsep 命令来分隔两个项目
-\projectsep
-
-% --- 第二个项目 ---
-\textbf{AIGC驱动的超进化自动挖坑机 (Agent)} \hfill 2025.02 -- 至今 \titlebreak
-项目描述：为探索心灵版规的边界，以及测试版主锁沉反应速度的极限，本项目基于\textbf{多智能体协作(MCP)与LLM}技术，开发了一款能\textbf{自主“挖坑”与“互坑”}的AI Agent。
-\begin{itemize}[nosep, topsep=\intraProjectListTopSep]
-    \item \textbf{并发与调度}：后端采用 \textbf{Go} 语言，充分利用 \textbf{Goroutine} 和 \textbf{Channel} 的高并发模型，模拟\textbf{用户并发在线}，执行定时挖坑，确保挖坑行动的\textbf{隐蔽性}与\textbf{高效性}。
-    \item \textbf{实时监控与响应}：运用 \textbf{WebSocket} 协议实现了对目标帖子的\textbf{实时监听与交互}。确保在烂坑被识破的第一时间，Agent能光速完成\textbf{“lktp”}或\textbf{反向钓鱼}操作，展现出极高的AI博弈能力。
-    \item \textbf{可视化GUI}：前端使用 \textbf{React} 框架构建了\textbf{后台管理的可视化面板 (Admin Panel)}。可一键下达挖坑指令、动态调整Agent的\textbf{指令}、并实时监控数据。
-\end{itemize}
-
-\section{\makebox[\widthof{\faCogs}][c]{\color{CVBlue}\faCogs}\ 技术栈}
-\begin{itemize}[nosep]
-    \item \textbf{编程语言：} \textbf{Go}, Python, C++
-    \item \textbf{开发工具：} SSH, Git, Vim, MakeFile,LaTex
-    \item \textbf{操作系统：} Linux
-\end{itemize}
-\section{\makebox[\widthof{\faGraduationCap}][c]{\color{CVBlue}\faList}\ 获奖情况}
+\cvsection{\faGraduationCap}{教育背景}
+\textbf{浙江大学\quad 数学科学学院} \hfill 2023.09 -- 2027.06（预计）\\
+信息与计算科学专业\quad 理学学士\quad 浙江杭州
 \begin{itemize}
-    \item CC98年度用户 \hfill 2023.12
-    
+    \item \textbf{学业成绩：}GPA \textbf{4.02/4.3}（88.4/100），专业排名 \textbf{10/40}。
+    \item \textbf{核心课程：}数值线性代数（98）、数值分析（86）、实变函数（90）、\\
+    数据结构与算法（90）、面向对象程序设计（OOP，96）、统计学习（86）。
+    \item \textbf{英语水平：}大学英语六级（CET-6）：596；托福（TOEFL）：5.5（110）。
 \end{itemize}
-    
-\section{\makebox[\widthof{\faInfo}][c]{\color{CVBlue}\faInfo}\ 其他}
-\begin{itemize}[parsep=0.5ex]
-    \item \textbf{技术博客：} \href{https://maksymilan.github.io/}{https://maksymilan.github.io/}
-    \item \textbf{GitHub：} \href{https://github.com/maksymilan}{https://github.com/maksymilan} 
-    \item \textbf{英语水平：} CET-4, CET-6
+
+\cvsection{\faUsers}{项目与学术经历}
+\textbf{高阶 B 样条插值算法实现} \hfill C++
+\begin{itemize}
+    \item 独立实现高阶 B 样条曲线插值算法，涵盖 2--7 阶 B 样条基函数构造、节点向量生成与导数基函数计算，支持导数边界条件、周期边界条件等多种插值条件。
+    \item 采用 Cox--de Boor 递推公式计算基函数；根据插值矩阵结构，分别使用三对角矩阵 Thomas 算法和带尺度化部分选主元的 LU 分解求解线性方程组，并通过迭代改进（Iterative Refinement）提高数值稳定性。
+    \item 为递归基函数求值设计记忆化缓存（Memoization），减少重复计算；设计模块化接口并完善异常处理，提高算法组件的可复用性与可维护性。
 \end{itemize}
+
+\projectsep
+\textbf{数值线性代数算法库开发} \hfill C++
+\begin{itemize}
+    \item 独立实现 LU 分解、$LDL^{\mathsf T}$ 分解、Householder QR 分解及 QR 迭代特征值计算，构建统一的矩阵计算接口。
+    \item 针对不同矩阵类型设计测试用例，比较各类分解算法在不同条件数矩阵下的数值稳定性、计算精度与效率。
+\end{itemize}
+
+\projectsep
+\textbf{Math\&Control + AI 讨论班} \hfill 2026.10 -- 至今
+\begin{itemize}
+    \item 参与浙江大学数学科学学院组织的 Math\&Control + AI 讨论班，了解机器学习前沿内容，包括大模型训练优化算法的最新进展及大模型微调技术。
+\end{itemize}
+
+\cvsection{\faCogs}{专业技能}
+\begin{itemize}
+    \item \textbf{编程语言：}C++（STL），Python（NumPy、PyTorch、Pandas），MATLAB。
+    \item \textbf{数学与算法：}具备扎实的数值分析、数值线性代数与泛函分析基础；熟悉矩阵分解、线性方程组求解及数值稳定性分析。
+    \item \textbf{开发工具：}Git、GDB、CMake、Linux/Unix、\LaTeX。
+\end{itemize}
+
+\cvsection{\faList}{获奖情况}
+\begin{itemize}
+    \item 浙江大学学业优秀标兵\hfill 2023--2024、2024--2025、2025--2026 学年
+    \item 浙江大学三等奖学金\hfill 2023--2024、2024--2025 学年
+\end{itemize}
+
 \end{document}
